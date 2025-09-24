@@ -59,27 +59,61 @@ export class News extends Component {
 
   constructor(){
     super();
-    // console.log("Constructor");
     this.state = {
       articles: this.articles,
       loading : false ,
-
+      page: 1,
+      pageSize: 16,
     }
     
+  }
+
+  async componentDidMount(){
+    let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=6036ee75cb1543c1bc655e02136dfbe2&page=1&pageSize=${this.state.pageSize}`
+    let data = await fetch(url);
+    let parsedData = await data.json();
+    this.setState({ articles: parsedData.articles, loading: false, totalResults: parsedData.totalResults });
+  }
+
+  handlePreviousClick = async() => {
+    let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=6036ee75cb1543c1bc655e02136dfbe2&page=${this.state.page-1}&pageSize=${this.state.pageSize}`
+    let data = await fetch(url);
+    let parsedData = await data.json();
+
+    this.setState({ 
+      page: this.state.page - 1,
+      articles: parsedData.articles
+    });
+    
+  }
+  handleNextClick =async () => {
+    let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=6036ee75cb1543c1bc655e02136dfbe2&page=${this.state.page+1}&pageSize=${this.state.pageSize}`
+    let data = await fetch(url);
+    let parsedData = await data.json();
+
+    this.setState({ 
+      page: this.state.page + 1,
+      articles: parsedData.articles
+    });
   }
 
   render() {
     return (
       <div className='container my-3  '>
-        <h3>News-Monkey Top Headlines:</h3>
-        {/* {this.state.articles.map((element)=>{console.log(element)})} */}
+        <h1 className='text-3xl font-semibold'>News-Monkey Top Headlines:</h1>
         <div className="row ">
           {this.state.articles.map((element)=>{
-             return <div className="col md-3" key={element.url}>
-              <NewsItem  title={element.title.slice(0,40)} description={element.description.slice(0,100)} imageURL ={element.urlToImage} newsURL={element.url} />
-            </div> 
-          })}
-          
+             return <div className="col-md-3" key={element.url}>
+              <NewsItem  title={element.title } 
+              description={element.description}
+              imageURL ={element.urlToImage} 
+              newsURL={element.url} />
+            </div>
+            })} 
+            <div className='container d-flex justify-content-between'>
+              <button disabled={this.state.page<=1} onClick={this.handlePreviousClick} className='btn btn-dark'>&larr; Previous</button>
+              <button disabled={this.state.page>=Math.ceil(this.state.totalResults/16)} onClick={this.handleNextClick} className='btn btn-dark'>Next &rarr;</button>
+            </div>
         </div>
       </div>
 
