@@ -99,7 +99,7 @@ export class News extends Component {
 
   render() {
     return (
-      <div className='container my-3  '>
+      <div className='container my-3 px-10 flex flex-col justify-center bg-gray-100'>
         <h1 className='text-3xl font-semibold'>News-Monkey Top Headlines:</h1>
         <div className="row ">
           {this.state.articles.map((element)=>{
